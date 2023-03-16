@@ -3,19 +3,15 @@ package com.gelileo.crud.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Getter
-@Setter
-@RequiredArgsConstructor
 public class SystemUser {
     @Id
-    @SequenceGenerator(
-            name = "user_id_seq",
-            sequenceName = "user_id_seq"
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "user_id_seq")
+    @GeneratedValue
     private Long id;
     private String username, firstName, lastName;
     private String password;

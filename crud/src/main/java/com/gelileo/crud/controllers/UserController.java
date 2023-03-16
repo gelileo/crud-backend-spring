@@ -48,19 +48,14 @@ public class UserController {
     @PostMapping("")
     public Long addUser(
             @RequestBody UserDAO user) {
-        SystemUser systemUser = new SystemUser();
-        systemUser.setFirstName(user.firstName());
-        systemUser.setLastName(user.lastName());
-        systemUser.setEmail(user.email());
 
-        switch (user.gender()) {
-            case "male":
-                systemUser.setGender(SystemUser.Gender.MALE);break;
-            case "female":
-                systemUser.setGender(SystemUser.Gender.FEMALE);break;
-            default:
-                systemUser.setGender(SystemUser.Gender.UNDISCLOSED);
-        }
+        SystemUser systemUser = SystemUser.builder()
+                .lastName(user.lastName())
+                .firstName(user.firstName())
+                .email(user.email())
+                .gender(SystemUser.Gender.fromName(user.gender()))
+                .build();
+
         userRepository.save(systemUser);
         return systemUser.getId();
     }
