@@ -1,7 +1,15 @@
 # crud-backend-spring
 
-This is a simple Spring Boot application that implements CRUD operations on a User model.
+This project demonstrates the implementation of security using Spring Boot 3.0 and JSON Web Tokens (JWT).
 
+## Features
+
+- A PostgreSQL DOCKER container is used for persistence.
+- User registration and login with JWT authentication
+- Request Logging is configured using logback.
+
+# Getting Started
+It includes the following features:
 The application runs on http://localhost:8081. You can try the following in browser.
 
 ```
@@ -22,13 +30,18 @@ curl --location --request POST 'http://localhost:8081/v1/api/users' \
 
 ```
 
-
-A PostgreSQL DOCKER container is used for persistence.
-
 Run `docker compose -f ./docker-compose.yml up -d` in project folder to start postgres.
 
-No Spring Security is set up.
 
-Request Logging is configured using logback.
+## Spring Security 
 
+To add security to the CRUD app, first add following dependency in pom.xml
 
+```
+        <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+```
+
+Then, we want to make `SystemUser` class implements Spring Security's `UserDetails`
