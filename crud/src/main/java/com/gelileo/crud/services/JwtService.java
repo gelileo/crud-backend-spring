@@ -4,14 +4,12 @@ import com.gelileo.crud.helpers.JWTHelper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -19,7 +17,12 @@ public class JwtService {
     @Value(value = "${security.jwt.token.secret.key:secret-key}")
     private String secretKey;
 
-    public String generateToken(UserDetails userDetails) {
+    @PostConstruct
+    protected void init() {
+        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+    }
+
+    public String egenerateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
@@ -29,6 +32,7 @@ public class JwtService {
     ) {
         return Jwts.builder()
                 .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
                 .signWith(JWTHelper.getSingerKey(secretKey), SignatureAlgorithm.HS256)
@@ -47,7 +51,7 @@ public class JwtService {
     public Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
-                .setSigningKey(secretKey)
+                .setSigningKey(JWTHelper.getSingerKey(secretKey))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

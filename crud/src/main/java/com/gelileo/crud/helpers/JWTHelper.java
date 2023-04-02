@@ -23,13 +23,8 @@ public class JWTHelper {
     }
 
     public static Key getSingerKey(String secretKey) {
-//        TestKey key = new TestKey();
-//        String secret = key.getSecretKey();
-//        byte[] bytes = Decoders.BASE64.decode("OWYyZmQ4ZTAtNDU0NC0xMWVjLTgxZDMtMDI0MmFjMTMwMDA=");
-//        byte[] bytes = Decoders.BASE64URL.decode(secretKey);
         byte[] bytes = secretKey.getBytes();
         return Keys.hmacShaKeyFor(bytes);
-
     }
 
 }

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/v1/api/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
     private final SystemUserRepository userRepository;
@@ -33,7 +33,7 @@ public class UserController {
     private static UserDAO getUserDAO(SystemUser user) {
         return new UserDAO(user.getFirstName(),
                 user.getLastName(),
-                user.getGender().getName(),
+                (user.getGender() == null ? SystemUser.Gender.UNDISCLOSED : user.getGender()).getName(),
                 user.getEmail());
     }
 
@@ -43,7 +43,15 @@ public class UserController {
         return results.stream().map(user -> {
             return getUserDAO(user);
         }).toList();
+    }
 
+    @GetMapping("/findByEmail")
+    public UserDAO findByEmails(
+            @RequestParam("username") String email) {
+        SystemUser user = userRepository
+                .findByEmail(email)
+                .orElseThrow();
+        return getUserDAO(user);
     }
     @PostMapping("")
     public Long addUser(

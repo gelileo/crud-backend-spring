@@ -22,7 +22,6 @@ public class SystemUser implements UserDetails {
     private Long id;
     private String firstName, lastName;
     private String password;
-
     @Enumerated(EnumType.STRING)
     private Role role;
     @Override

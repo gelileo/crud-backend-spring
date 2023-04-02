@@ -30,7 +30,7 @@ public class AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-
+        System.out.println("Password length : " + user.getPassword().length());
         user = userRepository.save(user);
         String jwtToken = jwtService.generateToken(user);
         saveUserToken(user, jwtToken);
@@ -47,6 +47,7 @@ public class AuthService {
                         request.getPassword()
                 )
         );
+        
         SystemUser user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
         String jwtToken = jwtService.generateToken(user);
