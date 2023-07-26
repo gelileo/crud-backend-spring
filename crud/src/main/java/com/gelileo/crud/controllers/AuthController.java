@@ -25,4 +25,9 @@ public class AuthController {
         return authService.authenticate(request);
     }
 
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello, please login";
+    }
+
 }
