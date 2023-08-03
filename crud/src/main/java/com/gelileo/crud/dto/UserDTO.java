@@ -1,12 +1,8 @@
 package com.gelileo.crud.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;;
-
 //@Data
 //@AllArgsConstructor
-public record UserDAO (
+public record UserDTO(
     String firstName,
     String lastName,
     String gender,

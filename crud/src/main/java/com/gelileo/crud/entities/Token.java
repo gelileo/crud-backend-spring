@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -14,21 +16,24 @@ import lombok.NoArgsConstructor;
 public class Token {
     @Id
     @GeneratedValue
-    public Integer id;
+    private Integer id;
 
     @Column(unique = true)
-    public String token;
+    private String token;
 
     public enum TokenType {
-        BEARER
+        BEARER, // Access token
+        REFRESH
     }
     @Enumerated(EnumType.STRING)
-    public TokenType tokenType = TokenType.BEARER;
+    private TokenType tokenType = TokenType.BEARER;
 
-    public boolean revoked;
-    public boolean expired;
+    private boolean revoked;
+    private boolean expired;
 
     @ManyToOne
     @JoinColumn(name="user_id")
-    public SystemUser user;
+    private SystemUser user;
+    @Column(nullable = false)
+    private Instant expiryDate;
 }

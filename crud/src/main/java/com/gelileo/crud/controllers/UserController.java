@@ -1,6 +1,6 @@
 package com.gelileo.crud.controllers;
 
-import com.gelileo.crud.dto.UserDAO;
+import com.gelileo.crud.dto.UserDTO;
 import com.gelileo.crud.entities.SystemUser;
 import com.gelileo.crud.repository.SystemUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +17,12 @@ import java.util.Optional;
 public class UserController {
     private final SystemUserRepository userRepository;
     @GetMapping("/{userId}")
-    public UserDAO findUser(@PathVariable("userId") Long userId) {
+    public UserDTO findUser(@PathVariable("userId") Long userId) {
         try {
             Optional<SystemUser> res = userRepository.findById(userId);
             if (res.isPresent()) {
                 SystemUser user = res.get();
-                return getUserDAO(user);
+                return getUserDTO(user);
             }
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Found no user with id: " + userId);
@@ -30,32 +30,37 @@ public class UserController {
         return null;
      }
 
-    private static UserDAO getUserDAO(SystemUser user) {
-        return new UserDAO(user.getFirstName(),
+    private static UserDTO getUserDTO(SystemUser user) {
+        return new UserDTO(user.getFirstName(),
                 user.getLastName(),
                 (user.getGender() == null ? SystemUser.Gender.UNDISCLOSED : user.getGender()).getName(),
                 user.getEmail());
     }
 
     @GetMapping("")
-    public List<UserDAO> findAll() {
-        List<SystemUser> results = userRepository.findAll();
-        return results.stream().map(user -> {
-            return getUserDAO(user);
-        }).toList();
+    public List<UserDTO> findAll() {
+        try {
+            List<SystemUser> results = userRepository.findAll();
+            return results.stream().map(user -> {
+                return getUserDTO(user);
+            }).toList();
+        } catch (Exception ex) {
+            throw new RuntimeException();
+        }
+
     }
 
     @GetMapping("/findByEmail")
-    public UserDAO findByEmails(
+    public UserDTO findByEmails(
             @RequestParam("username") String email) {
         SystemUser user = userRepository
                 .findByEmail(email)
                 .orElseThrow();
-        return getUserDAO(user);
+        return getUserDTO(user);
     }
     @PostMapping("")
     public Long addUser(
-            @RequestBody UserDAO user) {
+            @RequestBody UserDTO user) {
 
         SystemUser systemUser = SystemUser.builder()
                 .lastName(user.lastName())
@@ -69,9 +74,9 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public UserDAO updateUser(
+    public UserDTO updateUser(
             @PathVariable("userId") Long userId,
-            @RequestBody UserDAO user) {
+            @RequestBody UserDTO user) {
         Optional<SystemUser> res = userRepository.findById(userId);
         if (res.isPresent()) {
             SystemUser existing = res.get();
@@ -93,7 +98,7 @@ public class UserController {
 
             userRepository.save(existing);
 
-            return getUserDAO(existing);
+            return getUserDTO(existing);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Found no user with id: " + userId);
         }

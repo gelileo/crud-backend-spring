@@ -2,10 +2,11 @@ package com.gelileo.crud.services;
 
 import com.gelileo.crud.constants.Role;
 import com.gelileo.crud.dto.AuthRequest;
-import com.gelileo.crud.dto.AuthResponse;
+import com.gelileo.crud.dto.AuthResults;
 import com.gelileo.crud.dto.RegisterRequest;
 import com.gelileo.crud.entities.SystemUser;
 import com.gelileo.crud.entities.Token;
+import com.gelileo.crud.exceptions.TokenRefreshException;
 import com.gelileo.crud.repository.SystemUserRepository;
 import com.gelileo.crud.repository.TokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,33 +15,32 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final SystemUserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final AccessTokenService accessTokenService;
+    private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
-    public AuthResponse register(RegisterRequest request) {
+    public SystemUser register(RegisterRequest request) {
         SystemUser user = SystemUser.builder()
                 .firstName(request.getFirstname())
                 .lastName(request.getLastname())
                 .email(request.getEmail())
+                .gender(SystemUser.Gender.MALE)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
         System.out.println("Password length : " + user.getPassword().length());
         user = userRepository.save(user);
-        String jwtToken = jwtService.generateToken(user);
-        saveUserToken(user, jwtToken);
-
-        return AuthResponse.builder()
-                .token(jwtToken)
-                .build();
+        return user;
     }
 
-    public AuthResponse authenticate(AuthRequest request) {
+    public AuthResults authenticate(AuthRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -50,32 +50,27 @@ public class AuthService {
         
         SystemUser user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
-        String jwtToken = jwtService.generateToken(user);
-        revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
-        return AuthResponse.builder()
-                .token(jwtToken)
+
+        // Previous tokens get revoked when creating new
+        Token accessToken = accessTokenService.createToken(user);
+        Token refreshToken = refreshTokenService.createToken(user);
+
+        return AuthResults
+                .builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
-    private void saveUserToken(SystemUser user, String jwtToken) {
-        var token = Token.builder()
-                .user(user)
-                .token(jwtToken)
-                .tokenType(Token.TokenType.BEARER)
-                .expired(false)
-                .revoked(false)
-                .build();
-        tokenRepository.save(token);
+    public String refresh(String refreshToken) {
+       return refreshTokenService
+                .findByToken(refreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(Token::getUser)
+                .map(accessTokenService::createToken)
+                .map(Token::getToken)
+                .orElseThrow(() -> new TokenRefreshException(refreshToken,
+                        "Refresh token is not in database!"));
     }
-    private void revokeAllUserTokens(SystemUser user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
-        if (validUserTokens.isEmpty())
-            return;
-        validUserTokens.forEach(token -> {
-            token.setExpired(true);
-            token.setRevoked(true);
-        });
-        tokenRepository.saveAll(validUserTokens);
-    }
+
 }

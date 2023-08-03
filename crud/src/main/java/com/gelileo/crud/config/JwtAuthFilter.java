@@ -2,14 +2,13 @@ package com.gelileo.crud.config;
 
 import com.gelileo.crud.helpers.JWTHelper;
 import com.gelileo.crud.repository.TokenRepository;
-import com.gelileo.crud.services.JwtService;
+import com.gelileo.crud.services.AccessTokenService;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +22,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-    private final JwtService jwtService;
+    private final AccessTokenService accessTokenService;
     private final UserDetailsService userDetailsService;
     private final TokenRepository tokenRepository;
     @Override
@@ -38,7 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        final String email = jwtService.extractUserName(jwt);
+        final String email = accessTokenService.extractUserName(jwt);
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
 
@@ -48,7 +47,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     .orElse(false);
 
 
-            if (jwtService.isTokenValid(jwt, userDetails) // check against Spring Security UserDetailsService
+            if (accessTokenService.isTokenValid(jwt, userDetails) // check against Spring Security UserDetailsService
                     && isValid) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
