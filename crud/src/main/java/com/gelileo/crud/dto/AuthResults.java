@@ -1,7 +1,9 @@
 package com.gelileo.crud.dto;
 
+import com.gelileo.crud.entities.SystemUser;
 import com.gelileo.crud.entities.Token;
 import lombok.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Builder
 @NoArgsConstructor
@@ -10,4 +12,5 @@ import lombok.*;
 public class AuthResults {
     private Token accessToken;
     private Token refreshToken;
+    private SystemUser user;
 }

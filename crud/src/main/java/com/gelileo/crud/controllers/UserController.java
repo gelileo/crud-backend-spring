@@ -5,6 +5,7 @@ import com.gelileo.crud.entities.SystemUser;
 import com.gelileo.crud.repository.SystemUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -38,6 +39,7 @@ public class UserController {
     }
 
     @GetMapping("")
+//    @PreAuthorize("hasAnyRole('ADMIN')")
     public List<UserDTO> findAll() {
         try {
             List<SystemUser> results = userRepository.findAll();

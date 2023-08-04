@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .gender(SystemUser.Gender.MALE)
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .roles(Set.of(Role.USER))
                 .build();
         System.out.println("Password length : " + user.getPassword().length());
         user = userRepository.save(user);
@@ -59,6 +60,7 @@ public class AuthService {
                 .builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .user(user)
                 .build();
     }
 

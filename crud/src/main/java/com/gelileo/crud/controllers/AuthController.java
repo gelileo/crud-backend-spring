@@ -43,6 +43,8 @@ public class AuthController {
                 .body(AuthResponse
                         .builder()
                         .token(result.getAccessToken().getToken())
+                        .username(result.getUser().getUsername())
+                        .roles(result.getUser().getRoles())
                         .build());
     }
 

@@ -20,8 +20,9 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException(""));
+        return username -> userRepository
+                .findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Found no user with email: " + username));
     }
 
     @Bean
@@ -31,11 +32,6 @@ public class ApplicationConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-
-//    @Bean
-//    public AuthenticationSuccessHandler authenticationSuccessHandler() {
-//        return new DidLoginHandler(new JwtService());
-//    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
