@@ -15,6 +15,6 @@ public class AuthControllerAdvice {
 
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(new ResponseError("TokenRefreshException", ex.getMessage()));
+                .body(new ResponseError("TokenRefreshException", ex.getMessage(), ex.getCause().toString()));
     }
 }

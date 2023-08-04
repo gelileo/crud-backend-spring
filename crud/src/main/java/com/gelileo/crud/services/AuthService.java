@@ -8,21 +8,18 @@ import com.gelileo.crud.entities.SystemUser;
 import com.gelileo.crud.entities.Token;
 import com.gelileo.crud.exceptions.TokenRefreshException;
 import com.gelileo.crud.repository.SystemUserRepository;
-import com.gelileo.crud.repository.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final SystemUserRepository userRepository;
-    private final TokenRepository tokenRepository;
+//    private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
@@ -34,7 +31,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .gender(SystemUser.Gender.MALE)
                 .password(passwordEncoder.encode(request.getPassword()))
-                .roles(Set.of(Role.USER))
+                .roles(Set.of(Role.ADMIN))
                 .build();
         System.out.println("Password length : " + user.getPassword().length());
         user = userRepository.save(user);

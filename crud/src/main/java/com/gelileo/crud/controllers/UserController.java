@@ -5,7 +5,6 @@ import com.gelileo.crud.entities.SystemUser;
 import com.gelileo.crud.repository.SystemUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,23 +18,22 @@ public class UserController {
     private final SystemUserRepository userRepository;
     @GetMapping("/{userId}")
     public UserDTO findUser(@PathVariable("userId") Long userId) {
-        try {
-            Optional<SystemUser> res = userRepository.findById(userId);
-            if (res.isPresent()) {
-                SystemUser user = res.get();
-                return getUserDTO(user);
-            }
-        } catch (Exception ex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Found no user with id: " + userId);
-        }
-        return null;
-     }
+        Optional<SystemUser> res = userRepository.findById(userId);
+        return res.map(UserController::getUserDTO)
+                .orElseThrow(() -> {
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Found no user with id: " + userId);
+                }
+                        );
+    }
 
     private static UserDTO getUserDTO(SystemUser user) {
-        return new UserDTO(user.getFirstName(),
-                user.getLastName(),
-                (user.getGender() == null ? SystemUser.Gender.UNDISCLOSED : user.getGender()).getName(),
-                user.getEmail());
+        return UserDTO.builder()
+                .lastName(user.getLastName())
+                .firstName(user.getFirstName())
+                .gender((user.getGender() == null ? SystemUser.Gender.UNDISCLOSED : user.getGender()).getName())
+                .email(user.getEmail())
+                .roles(user.getRoles())
+                .build();
     }
 
     @GetMapping("")
@@ -43,9 +41,7 @@ public class UserController {
     public List<UserDTO> findAll() {
         try {
             List<SystemUser> results = userRepository.findAll();
-            return results.stream().map(user -> {
-                return getUserDTO(user);
-            }).toList();
+            return results.stream().map(UserController::getUserDTO).toList();
         } catch (Exception ex) {
             throw new RuntimeException();
         }
@@ -65,10 +61,10 @@ public class UserController {
             @RequestBody UserDTO user) {
 
         SystemUser systemUser = SystemUser.builder()
-                .lastName(user.lastName())
-                .firstName(user.firstName())
-                .email(user.email())
-                .gender(SystemUser.Gender.fromName(user.gender()))
+                .lastName(user.getLastName())
+                .firstName(user.getFirstName())
+                .email(user.getEmail())
+                .gender(SystemUser.Gender.fromName(user.getFirstName()))
                 .build();
 
         userRepository.save(systemUser);
@@ -82,22 +78,25 @@ public class UserController {
         Optional<SystemUser> res = userRepository.findById(userId);
         if (res.isPresent()) {
             SystemUser existing = res.get();
-            if (user.firstName() != null) {
-                existing.setFirstName(user.firstName());
+            if (user.getFirstName() != null) {
+                existing.setFirstName(user.getFirstName());
             }
 
-            if (user.lastName() != null) {
-                existing.setLastName(user.lastName());
+            if (user.getLastName() != null) {
+                existing.setLastName(user.getLastName());
             }
 
-            if (user.email() != null) {
-                existing.setEmail(user.email());
+            if (user.getEmail() != null) {
+                existing.setEmail(user.getEmail());
             }
 
-            if (user.gender() != null) {
-                existing.setGender(SystemUser.Gender.fromName(user.gender()));
+            if (user.getGender() != null) {
+                existing.setGender(SystemUser.Gender.fromName(user.getGender()));
             }
 
+            if (user.getRoles() != null) {
+                existing.setRoles(user.getRoles());
+            }
             userRepository.save(existing);
 
             return getUserDTO(existing);

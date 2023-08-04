@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -24,18 +23,14 @@ public class SystemUser implements UserDetails {
     private Long id;
     private String firstName, lastName;
     private String password;
-
-//    @Enumerated(EnumType.STRING)
-//    private Role role;
     private Set<Role> roles = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return List.of(new SimpleGrantedAuthority(role.name()));
         return roles
                 .stream()
-                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())) // 'ROLE_' is the default prefix
                 .toList();
     }
 
@@ -70,7 +65,8 @@ public class SystemUser implements UserDetails {
         UNDISCLOSED("unknown");
 
         private final String name;
-        private Gender(String name) {
+
+        Gender(String name) {
             this.name = name;
         }
 
