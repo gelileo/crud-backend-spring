@@ -1,5 +1,6 @@
 package com.gelileo.crud.config;
 
+import com.gelileo.crud.exceptionHandler.AuthErrorHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
@@ -20,14 +20,14 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final AuthErrorHandler authErrorHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf((csrf) -> csrf.disable())
                 .exceptionHandling( (exceptionHandling) ->
-                        exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        exceptionHandling.authenticationEntryPoint(authErrorHandler)
                 )
                 .authorizeHttpRequests( (authorizeHttpRequests) ->
                         authorizeHttpRequests

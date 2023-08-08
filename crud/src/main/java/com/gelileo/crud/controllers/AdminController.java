@@ -24,7 +24,7 @@ public class AdminController {
         Optional<SystemUser> res = userRepository.findById(userId);
         if (res.isPresent()) {
             SystemUser existing = res.get();
-            if (existing.getUsername().equals(req.username())) {
+            if (!existing.getUsername().equals(req.username())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user names don't match");
             }
             existing.setRoles(req.roles());

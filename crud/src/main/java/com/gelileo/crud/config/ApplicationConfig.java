@@ -55,8 +55,9 @@ public class ApplicationConfig {
     @Bean
     static RoleHierarchy roleHierarchy() {
         var hierarchy = new RoleHierarchyImpl();
-        hierarchy.setHierarchy("ROLE_ADMIN > ROLE_USER\n " +
-                "ROLE_USER > ROLE_GUEST");
+        hierarchy.setHierarchy(
+                "ROLE_ADMIN > ROLE_STAFF\n " +
+                "ROLE_STAFF > ROLE_USER");
         return hierarchy;
     }
 

@@ -1,4 +1,4 @@
-package com.gelileo.crud.advices;
+package com.gelileo.crud.exceptionHandler;
 
 import com.gelileo.crud.exceptions.TokenRefreshException;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,10 @@ public class AuthControllerAdvice {
 
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(new ResponseError("TokenRefreshException", ex.getMessage(), ex.getCause().toString()));
+                .body(new ResponseError(
+                        "TokenRefreshException",
+                        ex.getMessage(),
+                        ex.getCause() == null ? "" : ex.getCause().toString())
+                );
     }
 }
