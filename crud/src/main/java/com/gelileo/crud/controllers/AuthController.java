@@ -5,6 +5,7 @@ import com.gelileo.crud.dto.AuthResponse;
 import com.gelileo.crud.dto.AuthResults;
 import com.gelileo.crud.dto.RegisterRequest;
 import com.gelileo.crud.entities.SystemUser;
+import com.gelileo.crud.entities.Token;
 import com.gelileo.crud.services.AuthService;
 import com.gelileo.crud.services.AccessTokenService;
 import com.gelileo.crud.services.RefreshTokenService;
@@ -50,11 +51,13 @@ public class AuthController {
 
     @PostMapping("/refreshtoken")
     ResponseEntity refreshToken(@CookieValue("refresh-token") String refreshToken) {
-        String newAccessToken = authService.refresh(refreshToken);
+        Token newAccessToken = authService.refresh(refreshToken);
         return ResponseEntity.ok()
                 .body(AuthResponse
                         .builder()
-                        .token(newAccessToken)
+                        .token(newAccessToken.getToken())
+                        .roles(newAccessToken.getUser().getRoles())
+                        .username(newAccessToken.getUser().getUsername())
                         .build());
     }
 }

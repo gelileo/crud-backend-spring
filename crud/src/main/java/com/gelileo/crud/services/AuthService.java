@@ -61,13 +61,12 @@ public class AuthService {
                 .build();
     }
 
-    public String refresh(String refreshToken) {
+    public Token refresh(String refreshToken) {
        return refreshTokenService
                 .findByToken(refreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(Token::getUser)
                 .map(accessTokenService::createToken)
-                .map(Token::getToken)
                 .orElseThrow(() -> new TokenRefreshException(refreshToken,
                         "Refresh token is not in database!"));
     }

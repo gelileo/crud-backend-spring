@@ -26,7 +26,7 @@ public class UserController {
                         );
     }
 
-    private static UserDTO getUserDTO(SystemUser user) {
+    public static UserDTO getUserDTO(SystemUser user) {
         return UserDTO.builder()
                 .lastName(user.getLastName())
                 .firstName(user.getFirstName())
@@ -93,10 +93,10 @@ public class UserController {
             if (user.getGender() != null) {
                 existing.setGender(SystemUser.Gender.fromName(user.getGender()));
             }
-
-            if (user.getRoles() != null) {
-                existing.setRoles(user.getRoles());
-            }
+// This should be an admin endpoint.
+//            if (user.getRoles() != null) {
+//                existing.setRoles(user.getRoles());
+//            }
             userRepository.save(existing);
 
             return getUserDTO(existing);
