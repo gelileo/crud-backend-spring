@@ -1,8 +1,8 @@
-package com.gelileo.crud.constants;
-
-public enum Role {
-    ADMIN,
-    STAFF,
-    USER
-}
-
+//package com.gelileo.crud.constants;
+//
+//public enum Role {
+//    ADMIN,
+//    STAFF,
+//    USER
+//}
+//

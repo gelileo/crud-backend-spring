@@ -1,4 +1,4 @@
-package com.gelileo.crud.dto;
+package com.gelileo.crud.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

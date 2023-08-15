@@ -1,10 +1,15 @@
 package com.gelileo.crud.controllers;
 
+import com.gelileo.crud.dto.PasswordDTO;
 import com.gelileo.crud.dto.UserDTO;
 import com.gelileo.crud.entities.SystemUser;
+import com.gelileo.crud.exceptions.UserError;
+import com.gelileo.crud.model.GenericResponse;
 import com.gelileo.crud.repository.SystemUserRepository;
+import com.gelileo.crud.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -16,14 +21,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserController {
     private final SystemUserRepository userRepository;
+    private final UserService userService;
+
     @GetMapping("/{userId}")
     public UserDTO findUser(@PathVariable("userId") Long userId) {
         Optional<SystemUser> res = userRepository.findById(userId);
         return res.map(UserController::getUserDTO)
-                .orElseThrow(() -> {
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Found no user with id: " + userId);
-                }
-                        );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Found no user with id: " + userId));
     }
 
     public static UserDTO getUserDTO(SystemUser user) {
@@ -71,6 +75,18 @@ public class UserController {
         return systemUser.getId();
     }
 
+    @PreAuthorize("hasAuthority('CHANGE_PASSWORD_PRIVILEGE')")
+    @PutMapping("/updatePassword")
+    public GenericResponse updatePassword(
+            @RequestBody PasswordDTO passwordDTO) {
+        SystemUser user = userService.findUserByEmail(passwordDTO.email());
+        if (userService.validateOldPassword(user, passwordDTO.oldPassword())) {
+            userService.changePassword(user, passwordDTO.newPassword());
+            return new GenericResponse("Successfully changed password");
+        } else {
+            throw UserError.PasswordNotMatch.exception();
+        }
+    }
     @PutMapping("/{userId}")
     public UserDTO updateUser(
             @PathVariable("userId") Long userId,

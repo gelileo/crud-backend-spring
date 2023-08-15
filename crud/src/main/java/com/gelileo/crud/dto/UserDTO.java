@@ -1,12 +1,13 @@
 package com.gelileo.crud.dto;
 
-import com.gelileo.crud.constants.Role;
+import com.gelileo.crud.entities.Role;
 import com.gelileo.crud.entities.SystemUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.Set;
 @Data
 @Builder
@@ -17,7 +18,7 @@ public class UserDTO {
     private String lastName;
     private String gender;
     private String email;
-    private Set<Role> roles;
+    private Collection<Role> roles;
 
     public UserDTO(SystemUser user) {
         super();

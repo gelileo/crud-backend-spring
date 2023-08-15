@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
 //        return ResponseEntity.status(ex.getStatus()).body(ex.getReason());
         return ResponseEntity
                 .status(ex.getStatusCode())
-                .body(new ResponseError("ResponseStatusException", ex.getMessage(), ""));
+                .body(new ResponseError("ResponseStatusException", ex.getMessage(), ex.getBody().getDetail() == null ? "" : ex.getBody().getDetail()));
     }
 
     @ExceptionHandler(AccessDeniedException.class)

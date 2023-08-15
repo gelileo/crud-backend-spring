@@ -1,4 +1,4 @@
-package com.gelileo.crud.dto;
+package com.gelileo.crud.model;
 
 import com.gelileo.crud.entities.SystemUser;
 import com.gelileo.crud.entities.Token;

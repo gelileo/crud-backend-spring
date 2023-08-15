@@ -1,11 +1,12 @@
-package com.gelileo.crud.dto;
+package com.gelileo.crud.model;
 
-import com.gelileo.crud.constants.Role;
+import com.gelileo.crud.entities.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.Set;
 
 @Data
@@ -15,5 +16,5 @@ import java.util.Set;
 public class AuthResponse {
     private String token;
     private String username;
-    private Set<Role> roles;
+    private Collection<String> roles;
 }

@@ -1,18 +1,23 @@
 package com.gelileo.crud.services;
 
-import com.gelileo.crud.constants.Role;
-import com.gelileo.crud.dto.AuthRequest;
-import com.gelileo.crud.dto.AuthResults;
-import com.gelileo.crud.dto.RegisterRequest;
+import com.gelileo.crud.exceptions.UserError;
+import com.gelileo.crud.model.AuthRequest;
+import com.gelileo.crud.model.AuthResults;
+import com.gelileo.crud.model.RegisterRequest;
+import com.gelileo.crud.entities.Role;
 import com.gelileo.crud.entities.SystemUser;
 import com.gelileo.crud.entities.Token;
 import com.gelileo.crud.exceptions.TokenRefreshException;
+import com.gelileo.crud.repository.RoleRepository;
 import com.gelileo.crud.repository.SystemUserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -24,17 +29,26 @@ public class AuthService {
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
+    private final RoleRepository roleRepository;
+
     public SystemUser register(RegisterRequest request) {
+
+        Optional<Role> adminRole = roleRepository.findByName("ADMIN");
+        if (adminRole.isEmpty()) {
+            throw UserError.RoleMissing.exception("ADMIN role not found!");
+        }
+
         SystemUser user = SystemUser.builder()
                 .firstName(request.getFirstname())
                 .lastName(request.getLastname())
                 .email(request.getEmail())
                 .gender(SystemUser.Gender.MALE)
                 .password(passwordEncoder.encode(request.getPassword()))
-                .roles(Set.of(Role.ADMIN))
+                .roles(Set.of(adminRole.get()))
                 .build();
-        System.out.println("Password length : " + user.getPassword().length());
-        user = userRepository.save(user);
+//        System.out.println("Password length : " + user.getPassword().length());
+//        System.out.println(Hashing.sha256().hashString(request.getPassword(), Charset.defaultCharset()));
+        userRepository.save(user);
         return user;
     }
 
