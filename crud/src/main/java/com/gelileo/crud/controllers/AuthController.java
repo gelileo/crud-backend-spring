@@ -1,6 +1,7 @@
 package com.gelileo.crud.controllers;
 
 import com.gelileo.crud.entities.Role;
+import com.gelileo.crud.exceptionHandler.ResponseError;
 import com.gelileo.crud.model.AuthRequest;
 import com.gelileo.crud.model.AuthResponse;
 import com.gelileo.crud.model.AuthResults;
@@ -11,11 +12,15 @@ import com.gelileo.crud.repository.SystemUserRepository;
 import com.gelileo.crud.services.AuthService;
 import com.gelileo.crud.services.AccessTokenService;
 import com.gelileo.crud.services.RefreshTokenService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -32,7 +37,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<SystemUser>register(
-            @RequestBody RegisterRequest request) {
+            @RequestBody @Valid RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
     }
 

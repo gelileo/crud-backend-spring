@@ -1,7 +1,7 @@
 /*
  It's a playground for testing things :)
  */
-package com.gelileo.crud.playground;
+package com.gelileo.crud.demo;
 
 import com.gelileo.crud.entities.SystemUser;
 import com.gelileo.crud.repository.SystemUserRepository;
@@ -16,7 +16,7 @@ import java.util.Collection;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/playground")
-public class PlaygroundController {
+public class DemoController {
     private final SystemUserRepository systemUserRepository;
     @GetMapping("/")
     public ResponseEntity<Collection<SystemUser>> findAll() {

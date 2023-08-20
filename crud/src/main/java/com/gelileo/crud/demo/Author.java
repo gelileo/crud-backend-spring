@@ -1,4 +1,4 @@
-package com.gelileo.crud.playground;
+package com.gelileo.crud.demo;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
