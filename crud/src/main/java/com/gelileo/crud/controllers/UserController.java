@@ -7,6 +7,7 @@ import com.gelileo.crud.exceptions.UserError;
 import com.gelileo.crud.model.GenericResponse;
 import com.gelileo.crud.repository.SystemUserRepository;
 import com.gelileo.crud.services.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth") // the name in @SecurityScheme
 public class UserController {
     private final SystemUserRepository userRepository;
     private final UserService userService;

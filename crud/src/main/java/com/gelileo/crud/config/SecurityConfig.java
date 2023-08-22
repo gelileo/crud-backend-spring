@@ -35,6 +35,13 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/playground/**").permitAll()
                                 .requestMatchers("/api/v1/users/**").hasRole("USER")
                                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/v2/api-docs").permitAll()
+                                .requestMatchers("/v3/api-docs").permitAll()
+                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/configuration/**").permitAll()
+                                .requestMatchers("/webjars/**").permitAll()
+                                .requestMatchers("/swagger-ui.html").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement( (sessionManagement) ->
