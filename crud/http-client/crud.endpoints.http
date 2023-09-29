@@ -1,0 +1,122 @@
+###
+### Login as admin
+###
+POST {{baseUrl}}/api/v1/auth/authenticate
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "password"
+}
+
+> {%
+    // utilities
+    function nullOrNumber(value) {
+        return value === null || typeof value === 'number';
+    }
+
+    function nullOrString(value) {
+        return value === null || typeof value === 'string';
+    }
+
+    function nullOrObject(value) {
+        return value === null || typeof value === 'object';
+    }
+
+    function nullOrDate(value) {
+        if (value === null || typeof value === 'number') {
+            if (value !== null) {
+                const date = new Date(value);
+                client.assert(!isNaN(date), "date should not be NaN");
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    client.test("Status code is 200", function () {
+        client.assert(response.status === 200, "Response status should be 200");
+    });
+
+    client.test("Each object in the response has the required fields and data types", () => {
+        let respBody = response.body;
+        if (typeof respBody === 'string') {
+            respBody = JSON.parse(respBody);
+        }
+        client.assert(nullOrString(respBody.token), "respBody.token should be a string or null");
+        client.assert(nullOrString(respBody.username), "respBody.username should be a string or null");
+        client.assert(Array.isArray(respBody.roles), "Response should be an array");
+        for (let index in respBody.roles) {
+            let obj = respBody.roles[index];
+            client.assert(nullOrString(obj), "obj should be a string or null");
+        }
+
+        client.log("Got token: " +  respBody.token);
+        client.global.set("token", respBody.token);
+    });
+%}
+
+###
+### Get all users
+###
+GET {{baseUrl}}/api/v1/users
+Authorization: Bearer {{token}}
+
+> {%
+    // utilities
+    function nullOrNumber(value) {
+        return value === null || typeof value === 'number';
+    }
+
+    function nullOrString(value) {
+        return value === null || typeof value === 'string';
+    }
+
+    function nullOrObject(value) {
+        return value === null || typeof value === 'object';
+    }
+
+    function nullOrDate(value) {
+        if (value === null || typeof value === 'number') {
+            if (value !== null) {
+                const date = new Date(value);
+                client.assert(!isNaN(date), "date should not be NaN");
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    client.test("Status code is 200", function () {
+        client.assert(response.status === 200, "Response status should be 200");
+    });
+
+    client.test("Each object in the response has the required fields and data types", () => {
+        let respBody = response.body;
+        if (typeof respBody === 'string') {
+            respBody = JSON.parse(respBody);
+        }
+        client.assert(Array.isArray(respBody), "Response should be an array");
+        for (let index in respBody) {
+            let var0 = respBody[index];
+            client.assert(nullOrString(var0.firstName), "var0.firstName should be a string or null");
+            client.assert(nullOrString(var0.lastName), "var0.lastName should be a string or null");
+            client.assert(nullOrString(var0.gender), "var0.gender should be a string or null");
+            client.assert(nullOrString(var0.email), "var0.email should be a string or null");
+            client.assert(Array.isArray(var0.roles), "Response should be an array");
+            for (let index in var0.roles) {
+                let var1 = var0.roles[index];
+                client.assert(typeof var1.id === "number");
+                client.assert(Array.isArray(var1.privileges), "Response should be an array");
+                for (let index in var1.privileges) {
+                    let var2 = var1.privileges[index];
+                    client.assert(typeof var2.id === "number");
+                    client.assert(nullOrString(var2.name), "var2.name should be a string or null");
+                }
+                client.assert(nullOrString(var1.name), "var1.name should be a string or null");
+            }
+        }
+    });
+ %}

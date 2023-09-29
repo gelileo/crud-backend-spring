@@ -4,6 +4,7 @@ import com.gelileo.crud.validation.ValidationMessage;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -47,5 +48,10 @@ public class GlobalExceptionHandler {
                 .body(new ResponseError("Validation error: ", ex.getMessage(),  ""));
     }
     // Other exception handling methods...
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleJsonParseException(HttpMessageNotReadableException ex) {
+        // Handle the JSON parsing error and return a 400 BAD_REQUEST response
+        return ResponseEntity.badRequest().body("Invalid JSON payload: " + ex.getMessage());
+    }
 }
 

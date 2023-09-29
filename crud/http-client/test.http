@@ -1,0 +1,53 @@
+
+### Login as admin
+POST {{baseUrl}}/api/v1/auth/authenticate
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "password"
+}
+
+> {%
+    client.test("Status code is 200", function () {
+        client.assert(response.status === 200, "Response status should be 200");
+    });
+
+    client.test("Each object in the response has the required fields and data types", () => {
+        let respBody = response.body;
+        if (typeof respBody === 'string') {
+            respBody = JSON.parse(respBody);
+        }
+        client.log("Got token: " +  respBody.token);
+        client.global.set("token", respBody.token);
+    });
+%}
+
+
+### Get all users
+###
+GET {{baseUrl}}/api/v1/users
+Authorization: Bearer {{token}}
+
+> {%
+    client.test("Status code is 200", function () {
+        client.assert(response.status === 200, "Response status should be 200");
+    });
+%}
+
+### Add new user
+POST {{baseUrl}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+//  "firstname": "Test",
+//  "lastname": "Test",
+//  "password": "password",
+//  "email": "test@gmail.com"
+}
+
+> {%
+    client.test("Status code is 200", function () {
+        client.assert(response.status === 200, "Response status should be 200");
+    });
+%}
