@@ -32,9 +32,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests( (authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers("/api/v1/auth/**").permitAll()
+                                .requestMatchers("/error").permitAll()
                                 .requestMatchers("/api/v1/playground/**").permitAll()
                                 .requestMatchers("/api/v1/users/**").hasRole("USER")
                                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                                .anyRequest().authenticated()
+                )
+                .authorizeHttpRequests( (swaggerRequests) ->
+                        swaggerRequests
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/v2/api-docs").permitAll()
                                 .requestMatchers("/v3/api-docs").permitAll()
@@ -42,7 +47,6 @@ public class SecurityConfig {
                                 .requestMatchers("/configuration/**").permitAll()
                                 .requestMatchers("/webjars/**").permitAll()
                                 .requestMatchers("/swagger-ui.html").permitAll()
-                                .anyRequest().authenticated()
                 )
                 .sessionManagement( (sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
